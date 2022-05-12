@@ -1,23 +1,40 @@
 package com.example.diceroller
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
+import android.widget.ProgressBar
 import android.widget.TextView
-import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
-        val rollButton: Button = findViewById(R.id.button)
-        rollButton.setOnClickListener {
-            val textView: TextView = findViewById(R.id.textView)
-            textView.text = Dado().rollDice().toString()
-        }
+  var progressBar: ProgressBar? = null
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContentView(R.layout.activity_main)
+
+    progressBar = findViewById(R.id.progressBar)
+
+    val rollButton: Button = findViewById(R.id.button)
+    rollButton.setOnClickListener {
+      progressBar?.visibility = View.VISIBLE
+      val textView: TextView = findViewById(R.id.textView)
+      Dado().rollDice { result ->
+        textView.text = result.toString()
+        progressBar?.visibility = View.INVISIBLE
+      }
     }
 
-
+    val requestButton: Button = findViewById(R.id.request)
+    requestButton.setOnClickListener {
+      progressBar?.visibility = View.VISIBLE
+      MyRepository().getUsers { result ->
+        val response: TextView = findViewById(R.id.response)
+        response.text = result.toString()
+        progressBar?.visibility = View.INVISIBLE
+      }
+    }
+  }
 }
-
